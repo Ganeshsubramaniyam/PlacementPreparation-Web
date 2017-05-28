@@ -1,0 +1,101 @@
+		var totalobjects=[];
+		var tempdata;
+		var multistr=[];
+		var excel;
+		var excel_file;
+		var excel_sheet;
+
+		var urls = $(".div-multipager a");
+
+if(urls.length == 0)
+{
+var urlpath = window.location.href;
+$.ajax({
+					url:urlpath,
+					type:'GET',
+					async: false,
+					complete: function(datavalue){
+						var data = datavalue.responseText;		
+						onloadinit(data);
+					}
+					});
+}
+
+
+		for(var i2=0; i2 < urls.length ;i2++)
+		{
+			if (i2 == urls.length-1)
+				{
+					var urlpath = window.location.href;
+				}
+			else
+				{
+					var urlpath = 'http://www.indiabix.com' + $(urls[i2]).attr('href');
+				}		
+		
+			$.ajax({
+					url:urlpath,
+					type:'GET',
+					async: false,
+					complete: function(datavalue){
+						var data = datavalue.responseText;		
+						onloadinit(data);
+					}
+					});
+		
+			/*onloadinit(data.ResposeText);*/
+		}
+
+
+		function onloadinit(data)
+		{
+				
+			var contentdata = $(data).find(".tech-div");
+			
+			for (var i = 1; i < contentdata.length; i++) 
+			{
+				totalobjects.push(scrapdata(contentdata[i]));
+
+			}
+		}
+		function scrapdata(data)
+		{
+			
+
+				var question_text = "";
+				var answer = "";
+				var subdata = $(data);
+
+				question_text = $(subdata).find(".tech-question")[0].textContent;
+				answer = $(subdata).find(".tech-answer")[0].textContent;
+				var a={};
+				a.question = question_text;
+				a.ans = answer; 
+				return a;
+		}	
+		
+
+	tempdata = "";
+
+	var excel = new ActiveXObject("Excel.Application");
+
+	var excel_file = excel.Workbooks.Open("C:/Users/Ganesh/Desktop/Inputdata.xlsx");
+	
+	var excel_sheet = excel_file.Worksheets("Sheet1");
+
+	for(var i2=0; i2<totalobjects.length;i2++)
+		{
+			tempdata= totalobjects[i2].question+ "`" + 
+				  totalobjects[i2].ans + "\n";
+
+				  
+
+				excel_sheet.Cells(i2+1,1).Value = totalobjects[i2].question;
+				excel_sheet.Cells(i2+1,2).Value = totalobjects[i2].ans;
+
+			multistr.push(tempdata);
+		}
+		multistr.join("\n");
+		excel.Quit();
+
+

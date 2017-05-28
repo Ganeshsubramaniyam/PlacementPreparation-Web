@@ -1,0 +1,6 @@
+var cdata=$("#ib-main-bar :nth-child(2)");
+cdata[5].textContent;
+
+var urls=$("#ib-left-bar li a");
+
+var pplink=$(".jq-test-link");
