@@ -1,0 +1,16 @@
+//gets all the page urls for the page
+var jk=$(".art-blockcontent-body")[1];
+var jk1=$(jk).find("a");
+
+//load the page via ajax
+
+//get the url of the paper listed in the page
+var paperurl = $(".company_content_inner a");
+paperurl[0],paperurl[7]
+
+//load the page via ajax
+
+
+//get the data
+
+var uio=$(".company-contentdetailes");

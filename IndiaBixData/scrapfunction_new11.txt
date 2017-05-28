@@ -1,0 +1,162 @@
+
+		var ansG ;
+		
+		var totalobjects=[];
+
+		var tempdata;
+
+		var multistr=[];
+	
+		var excel;
+		var excel_file;
+		var excel_sheet;
+
+		var urls = $(".ib-pager a");
+
+if(urls.length == 0)
+{
+var urlpath = window.location.href;
+$.ajax({
+					url:urlpath,
+					type:'GET',
+					async: false,
+					complete: function(datavalue){
+						var data = datavalue.responseText;		
+						onloadinit(data);
+					}
+					});
+}
+
+
+		for(var i2=0; i2 < urls.length ;i2++)
+		{
+			if (i2 == urls.length-1)
+				{
+					var urlpath = window.location.href;
+				}
+			else
+				{
+					var urlpath = 'http://www.indiabix.com' + $(urls[i2]).attr('href');
+				}		
+		
+			$.ajax({
+					url:urlpath,
+					type:'GET',
+					async: false,
+					complete: function(datavalue){
+						var data = datavalue.responseText;		
+						onloadinit(data);
+					}
+					});
+		
+			/*onloadinit(data.ResposeText);*/
+		}
+
+
+		function onloadinit(data)
+		{
+				
+			var contentdata = $(data).find(".bix-tbl-container");
+				
+				
+			var ans = $(data).find('#hdnAjaxImageCacheKey').val().substr(18).split('').reverse().join('').substr(17).toUpperCase().split('');
+
+			for (var i = 0; i < contentdata.length; i++) 
+			{
+				totalobjects.push(scrapdata(contentdata[i],ans[i]));
+				//console.log(" I " + i );
+			}
+		}
+		function scrapdata(data,ans)
+		{
+			
+
+				var question_text = "";
+				var option1 = "";
+				var option2 = "";
+				var option3 = "";
+				var option4 = "";
+				var answer = "";
+				var explanation = "";
+
+				var subdata = $(data);
+
+
+				//question_text = "Spot the Sentence with Grammatical Errors if not so then select the NO ERROR option";
+
+				question_text = $(subdata).find(".bix-td-qtxt")[0].textContent;
+				option1 = $(subdata).find(".bix-td-option")[1].textContent;
+				option2 = $(subdata).find(".bix-td-option")[3].textContent;
+				option3 = $(subdata).find(".bix-td-option")[5].textContent;
+				option4 = $(subdata).find(".bix-td-option")[7].textContent;
+				answer = ans;
+				explanation= $(subdata).find(".div-spacer")[0].children[2].textContent;
+				if 	(answer == "A")
+				{
+					answer = option1;
+				}
+				else if (answer == "B") 
+				{
+					answer = option2;
+				}
+				else if (answer == "C")
+				{
+					answer = option3;
+				}
+				else
+				{
+					answer = option4;
+				}
+
+				var a={};
+				a.question = question_text;
+				a.opt1 = option1;
+				a.opt2 = option2;
+				a.opt3 = option3;
+				a.opt4 = option4;
+				a.ans = answer; 
+				a.exp = explanation;
+
+				// return { question : questiontext , opt1 : option1, opt2 : option2, opt3 : option3, op4 : option4, ans: answer};				
+				return a;
+		}	
+		
+
+	tempdata = "";
+
+	var excel = new ActiveXObject("Excel.Application");
+
+	var excel_file = excel.Workbooks.Open("C:/Users/Ganesh/Desktop/Inputdata.xlsx");
+	
+	var excel_sheet = excel_file.Worksheets("Sheet1");
+
+	for(var i2=0; i2<totalobjects.length;i2++)
+		{
+			tempdata= totalobjects[i2].question+ "`" + 
+				  totalobjects[i2].opt1+ "`" +
+				  totalobjects[i2].opt2+ "`" +
+				  totalobjects[i2].opt3+ "`" +
+				  totalobjects[i2].opt4+ "`" +
+				  totalobjects[i2].ans + "`" +
+				  totalobjects[i2].exp + "\n";
+				  
+
+				excel_sheet.Cells(i2+1,1).Value = totalobjects[i2].question;
+				excel_sheet.Cells(i2+1,2).Value = totalobjects[i2].opt1;
+				excel_sheet.Cells(i2+1,3).Value = totalobjects[i2].opt2;
+				excel_sheet.Cells(i2+1,4).Value = totalobjects[i2].opt3;
+				excel_sheet.Cells(i2+1,5).Value =  totalobjects[i2].opt4;
+				excel_sheet.Cells(i2+1,6).Value =  totalobjects[i2].ans;
+				excel_sheet.Cells(i2+1,7).Value =  totalobjects[i2].exp;
+ 
+
+				
+
+   				 
+			
+			multistr.push(tempdata);
+		}
+		multistr.join("\n");
+		excel.Quit();
+
+

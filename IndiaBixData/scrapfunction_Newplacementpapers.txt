@@ -1,0 +1,116 @@
+		
+		var totalobjects=[];
+
+		var tempdata;
+
+		var multistr=[];
+	
+		var excel;
+		var excel_file;
+		var excel_sheet;
+		
+		var excel = new ActiveXObject("Excel.Application");
+
+		var excel_file = excel.Workbooks.Open("C:/Users/Ganesh/Desktop/Inputdata.xlsx");
+	
+		var excel_sheet = excel_file.Worksheets("Sheet1");
+		window.ix2=0;
+		var urldiv=$(".art-blockcontent-body")[1];
+		var urls = $(urldiv).find("a");
+		var urlval=urls[0].href.substr(0,urls[0].href.indexOf("="));
+		var urlfinalval=urls[urls.length-1].href.substr(urls[urls.length-1].href.indexOf("=")+1,(urls[urls.length-1].href.length-urls[urls.length-1].href.indexOf("=")));
+var fnurls=[];
+for(var k=0;k<=urlfinalval;k++)
+{
+fnurls.push(urlval+"="+k);
+}
+
+if(fnurls.length == 0)
+{
+var urlpath = window.location.href;
+$.ajax({
+					url:urlpath,
+					type:'GET',
+					async: false,
+					complete: function(datavalue){
+						var data = datavalue.responseText;		
+						onloadinit(data);
+					}
+					});
+}
+
+
+		for(var i2=0; i2 < fnurls.length ;i2++)
+		{
+			
+			var urlpath = fnurls[i2];
+			
+			$.ajax({
+					url:urlpath,
+					type:'GET',
+					async: false,
+					complete: function(datavalue){
+						var data = datavalue.responseText;		
+						onloadinit(data);
+					}
+					});
+		
+			/*onloadinit(data.ResposeText);*/
+		}
+
+
+		function onloadinit(data)
+		{
+				
+			var contentdata = $(data).find(".company_content_inner a").not("fivestar-widget a");
+			
+for(i3=0;i3<contentdata.length;i3=i3+2)
+{
+var urlval=contentdata[i3].href;
+var pagetitle=contentdata[i3].innerHTML;
+$.ajax({
+					url:urlval,
+					type:'GET',
+					async: false,
+					complete: function(datavalue1){
+						var data1 = datavalue1.responseText;		
+//console.log('count' + i3);
+						getdatafrompage(data1,pagetitle);
+					}
+					});
+}			
+
+			
+		}
+		function getdatafrompage(data2,pgtitle)
+		{
+						
+
+			var papertitle = pgtitle;
+
+
+var di = document.createElement('div');
+di.innerHTML = data2;
+//console.log($(di).find(".company-contentdetailes").html());
+
+			var paperdata = $(di).find(".company-contentdetailes").html();
+			
+			scrapdata(paperdata,papertitle)
+			
+		}
+		function scrapdata(p_data,title)
+		{
+			
+				console.log(p_data);
+				excel_sheet.Cells(window.ix2+1,1).Value = p_data;
+				excel_sheet.Cells(window.ix2+1,2).Value = title;
+
+				
+				window.ix2=window.ix2+1;
+		}	
+		
+
+	
+		excel.Quit();
+
+
